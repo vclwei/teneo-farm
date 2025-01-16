@@ -16,8 +16,9 @@ async function readAccounts(filePath) {
     }
 }
 
-async function login(email, password) {
+async function login(email, password, proxy) {
     const loginUrl = "https://auth.teneo.pro/api/login";
+    const agent = new HttpsProxyAgent(proxy);
 
     try {
         const response = await axios.post(loginUrl, {
@@ -26,7 +27,9 @@ async function login(email, password) {
         }, {
             headers: {
                 'x-api-key': reffCode
-            }
+            },
+            httpsAgent: agent,
+            httpAgent: agent
         });
 
         const access_token = response.data.access_token;
@@ -52,9 +55,12 @@ async function refreshTokens() {
             console.log('No accounts found in the accounts.txt');
             return;
         }
-        for (const account of accounts) {
+        const proxies = await readFile('proxies.txt');
+        for (const [index, account] of accounts.entries()) {
             console.log('Getting access token for:', account.email);
-            const token = await login(account.email, account.password);
+            const proxy = proxies[index % proxies.length] || null;
+            const token = await login(account.email, account.password, proxy);
+            
             if (token) {
                 console.log('Access token:', token);
                 await fs.appendFile('tokens.txt', token + '\n', 'utf8');
