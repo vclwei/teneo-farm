@@ -1,5 +1,6 @@
 const fs = require('fs/promises');
 const axios = require('axios');
+const HttpsProxyAgent = require('https-proxy-agent');
 
 const reffCode = "OwAG3kib1ivOJG4Y0OCZ8lJETa6ypvsDtGmdhcjA";
 
