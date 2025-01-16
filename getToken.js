@@ -16,6 +16,16 @@ async function readAccounts(filePath) {
     }
 }
 
+async function readFile(filePath) {
+    try {
+        const data = await fs.readFile(filePath, 'utf8');
+        const lines = data.split('\n').map(line => line.trim());
+        return lines;
+    } catch (err) {
+        throw new Error(`Error reading file: ${err.message}`);
+    }
+}
+
 async function login(email, password, proxy) {
     const loginUrl = "https://auth.teneo.pro/api/login";
     const agent = new HttpsProxyAgent(proxy);
